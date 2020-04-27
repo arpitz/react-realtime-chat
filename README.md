@@ -1,2 +1,2 @@
-# react-expense-tracker
-React Expense Tracker using hooks and useContext 
+# react-realtime-chat
+Real time chat app with React, Node, Express and Socket.io
