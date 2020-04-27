@@ -23,18 +23,26 @@ io.on('connection', (socket) => {
         socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined!`});
 
         socket.join(user.room);
+
+        // After joining, the user should know who all are there in that chat room
+        io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room)});
         callback();
     })
 
     // When a user sends a message in the chat room.
     socket.on('sendMessage', (message, callback) => {
+        console.log('socket id', socket.id);
         const user = getUser(socket.id);
         io.to(user.room).emit('message', { user: user.name, text: message });
+        io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
         callback();
     })
     
     socket.on('disconnect', () => {
-        console.log('User has left !!');
+        const user = removeUser(socket.id);
+        if(user){
+            io.to(user.room).emit('message', { user: 'admin', text: `${user.name} has left.`});
+        }
     })
 })
 
